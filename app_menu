@@ -105,11 +105,9 @@ rofi_colors="-bc ${BORDER_COLOR} -bg ${BG_COLOR} -fg ${FG_COLOR} -hlfg ${HLFG_CO
 launcher_options_1="-dmenu -i -lines ${menu_nrows_1} -p ${ROFI_TEXT_1} ${rofi_colors} ${ROFI_OPTIONS}"
 launcher_options_3="-dmenu -i -lines ${menu_nrows_3} -p ${ROFI_TEXT_3} ${rofi_colors} ${ROFI_OPTIONS}"
 
-launcher="${launcher_exe} ${launcher_options}"
-
 case $BLOCK_BUTTON in
   1)  # mouse button 1 pressed (left)
-    selection="$(printf '%s\n' ${menu_1_list[@]} |  ${launcher_exe} ${launcher_options_1})"
+    selection="$(printf '%s\n' "${menu_1_list[@]}" |  ${launcher_exe} ${launcher_options_1})"
 
     #find index in list.. to get according command
     index=0;
