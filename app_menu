@@ -107,7 +107,7 @@ launcher_options_3="-dmenu -i -lines ${menu_nrows_3} -p ${ROFI_TEXT_3} ${rofi_co
 
 case $BLOCK_BUTTON in
   1)  # mouse button 1 pressed (left)
-    selection="$(printf '%s\n' "${menu_1_list[@]}" |  ${launcher_exe} ${launcher_options_1})"
+    selection="$(printf '%s\n' "${menu_1_list[@]}" |  ${launcher_exe} "${launcher_options_1}")"
 
     #find index in list.. to get according command
     index=0;
@@ -125,7 +125,7 @@ case $BLOCK_BUTTON in
     ;;
 
   3)  # mouse button 3 pressed (right)
-    selection="$(printf '%s\n' "${menu_3_list[@]}" |  ${launcher_exe} ${launcher_options_3})"
+    selection="$(printf '%s\n' "${menu_3_list[@]}" |  ${launcher_exe} "${launcher_options_3"})"
     #find index in list.. to get according command
     index=0;
     for item in "${menu_3_list[@]}"
