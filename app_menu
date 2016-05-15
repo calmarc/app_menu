@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+#
+# Modified from Benjamin Chrétien shutdown_menu script
+# https://github.com/vivien/i3blocks-contrib/blob/master/shutdown_menu/shutdown_menu
+# Copyright 2016 Calmar <mac@calmar.ws>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#######################################################################
+#                            BEGIN CONFIG                             #
+#######################################################################
+
+# Use a custom lock script
+#LOCKSCRIPT="i3lock-extra -m pixelize"
+
+# Colors: FG (foreground), BG (background), HL (highlighted)
+FG_COLOR="#bbbbbb"
+BG_COLOR="#111111"
+HLFG_COLOR="#111111"
+HLBG_COLOR="#bbbbbb"
+BORDER_COLOR="#222222"
+
+# Options not related to colors
+ROFI_TEXT_1="Launch:" # mouse button 1
+ROFI_TEXT_3="Quit:" # mouse button 3
+
+ROFI_OPTIONS="-width -15 -location 0 -hide-scrollbar -bw 2"
+
+# Menu with keys/commands pairs
+# 
+# menu_x_list must match with menu_x_command in order.
+# 1 = button 1 (left). 3 = button 3 (right)
+#
+menu_1_list=(
+  "urxvt"           #1
+  "tmux"            #2
+  "mc"              #3
+  "mutt"            #4
+  "----------- "    #5
+  "firefox"         #6
+  "gimp"            #7
+  "keepass"         #8
+  "rem_akku"        #9
+  "audacious"       #10
+  "darktable"       #11
+  "mkscreen"        #12
+  "fetchmail"       #13
+)
+menu_1_command=(
+  "urxvtc"                                 #1 
+  "urxvtc -tn 'xterm-256color' -e tmux"    #2 
+  "urxvtc -tn 'xterm-256color' -e mc"      #3 
+  "urxvtc -tn 'xterm-256color' -e mutt"    #4 
+  ""                                       #5 
+  "firefox"                                #6 
+  "gimp"                                   #7 
+  "keepass"                                #8 
+  "remote_akkumatik.py"                    #9 
+  "audacious"                              #10 
+  "darktable"                              #11
+  "mkscreen"                               #12
+  "sudo /etc/init.d/fetchmail restart"     #13
+)
+
+menu_3_list=(
+  "cancel"      #1
+  "--------- "  #2
+  "Lock"        #3
+  "Logout"      #4
+  "Reboot"      #5
+  "Shutdown"    #6
+)
+
+menu_3_command=(
+  ""                                                  #1
+  ""                                                  #2
+  "${LOCKSCRIPT:-i3lock --color=${BG_COLOR#"#"}}"     #3
+  "i3-msg exit"                                       #4
+  "sudo /sbin/shutdown -r now"                        #5
+  "sudo /sbin/shutdown -h now"                        #6
+)
+
+#######################################################################
+#                             END CONFIG                              #
+#######################################################################
+
+menu_nrows_1=${#menu_1_list[@]}
+menu_nrows_3=${#menu_3_list[@]}
+
+launcher_exe="rofi"
+
+rofi_colors="-bc ${BORDER_COLOR} -bg ${BG_COLOR} -fg ${FG_COLOR} -hlfg ${HLFG_COLOR} -hlbg ${HLBG_COLOR}"
+
+launcher_options_1="-dmenu -i -lines ${menu_nrows_1} -p ${ROFI_TEXT_1} ${rofi_colors} ${ROFI_OPTIONS}"
+launcher_options_3="-dmenu -i -lines ${menu_nrows_3} -p ${ROFI_TEXT_3} ${rofi_colors} ${ROFI_OPTIONS}"
+
+launcher="${launcher_exe} ${launcher_options}"
+
+case $BLOCK_BUTTON in
+  1)  # mouse button 1 pressed (left)
+    selection="$(printf '%s\n' ${menu_1_list[@]} |  ${launcher_exe} ${launcher_options_1})"
+
+    #find index in list.. to get according command
+    index=0;
+    for item in "${menu_1_list[@]}"
+    do
+      if [[ "$item" == "$selection" ]]; then
+        break
+      fi
+      index=$((index+1))
+    done
+    if [[ $? -eq 0 && ! -z ${selection} ]]; then
+      # get index of returned string
+      i3-msg -q "exec ${menu_1_command[${index}]}"
+    fi
+    ;;
+
+  3)  # mouse button 3 pressed (right)
+    selection="$(printf '%s\n' "${menu_3_list[@]}" |  ${launcher_exe} ${launcher_options_3})"
+    #find index in list.. to get according command
+    index=0;
+    for item in "${menu_3_list[@]}"
+    do
+      if [[ "$item" == "$selection" ]]; then
+        break
+      fi
+      index=$((index+1))
+    done
+    if [[ $? -eq 0 && ! -z ${selection} ]]; then
+      # get index of returned string
+      i3-msg -q "exec ${menu_3_command[${index}]}"
+    fi
+    ;;
+esac
+
+exec ./app_menu
