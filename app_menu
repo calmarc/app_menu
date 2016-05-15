@@ -98,8 +98,6 @@ menu_3_command=(
 menu_nrows_1=${#menu_1_list[@]}
 menu_nrows_3=${#menu_3_list[@]}
 
-launcher_exe="rofi"
-
 rofi_colors="-bc ${BORDER_COLOR} -bg ${BG_COLOR} -fg ${FG_COLOR} -hlfg ${HLFG_COLOR} -hlbg ${HLBG_COLOR}"
 
 launcher_options_1="-dmenu -i -lines ${menu_nrows_1} -p ${ROFI_TEXT_1} ${rofi_colors} ${ROFI_OPTIONS}"
@@ -107,7 +105,7 @@ launcher_options_3="-dmenu -i -lines ${menu_nrows_3} -p ${ROFI_TEXT_3} ${rofi_co
 
 case $BLOCK_BUTTON in
   1)  # mouse button 1 pressed (left)
-    selection="$(printf '%s\n' "${menu_1_list[@]}" |  ${launcher_exe} "${launcher_options_1}")"
+    selection="$(printf '%s\n' "${menu_1_list[@]}" |  rofi ${launcher_options_1})"
 
     #find index in list.. to get according command
     index=0;
@@ -125,7 +123,7 @@ case $BLOCK_BUTTON in
     ;;
 
   3)  # mouse button 3 pressed (right)
-    selection="$(printf '%s\n' "${menu_3_list[@]}" |  ${launcher_exe} "${launcher_options_3}")"
+    selection="$(printf '%s\n' "${menu_3_list[@]}" |  rofi ${launcher_options_3})"
     #find index in list.. to get according command
     index=0;
     for item in "${menu_3_list[@]}"
